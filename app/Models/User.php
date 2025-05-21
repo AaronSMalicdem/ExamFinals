@@ -6,6 +6,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Product;
+
 
 class User extends Authenticatable
 {
@@ -30,5 +32,10 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function wishlist()
+    {
+        return $this->belongsToMany(Product::class, 'wishlist');
     }
 }

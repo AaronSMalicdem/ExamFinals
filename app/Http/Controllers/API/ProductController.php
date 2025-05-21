@@ -132,4 +132,31 @@ class ProductController extends Controller
             return response()->json(['error' => 'Failed to delete product'], 500);
         }
     }
+
+    public function addToWishlist(Product $product)
+    {
+        $user = Auth::user();
+        if ($user->wishlist()->where('product_id', $product->id)->exists()) {
+            return response()->json(['message' => 'Product already in wishlist'], 400);
+        }
+
+        $user->wishlist()->attach($product->id);
+        return response()->json(['message' => 'Product added to wishlist'], 200);
+    }
+
+     public function removeFromWishlist(Product $product)
+    {
+        $user = Auth::user();
+        if (!$user->wishlist()->where('product_id', $product->id)->exists()) {
+            return response()->json(['message' => 'Product not in wishlist'], 400);
+        }
+
+        $user->wishlist()->detach($product->id);
+        return response()->json(['message' => 'Product removed from wishlist'], 200);
+    }
+
+    public function viewWishlist()
+    {
+        return response()->json(Auth::user()->wishlist, 200);
+    }
 }

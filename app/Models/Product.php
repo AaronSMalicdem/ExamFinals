@@ -22,4 +22,9 @@ class Product extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlist');
+    }
 }

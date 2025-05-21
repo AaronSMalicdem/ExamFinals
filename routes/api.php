@@ -22,12 +22,13 @@ Route::post('/register', function (Request $request) {
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
+        'role' => 'customer',
+
     ]);
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    return response()->json(['token' => $token], 201);
-});
+ return response()->json(['token' => $token, 'role' => $user->role], 201);});
 
 Route::post('/login', function (Request $request) {
     $validator = Validator::make($request->all(), [
@@ -47,8 +48,7 @@ Route::post('/login', function (Request $request) {
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    return response()->json(['token' => $token], 200);
-});
+ return response()->json(['token' => $token, 'role' => $user->role], 200);});
 
 Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
@@ -56,3 +56,9 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->apiResource('products', ProductController::class);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/wishlist/{product}', [ProductController::class, 'addToWishlist']);
+    Route::delete('/wishlist/{product}', [ProductController::class, 'removeFromWishlist']);
+    Route::get('/wishlist', [ProductController::class, 'viewWishlist']);
+});
